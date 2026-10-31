@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import fallbackProducts from '../store/fallbackProducts'
 import { useProductStore } from '../store/productStore'
 import '../App.css'
 
@@ -310,7 +311,9 @@ function ProductDetailPage() {
       })
       .catch((fetchError) => {
         if (controller.signal.aborted) return
-        const fallbackProduct = products.find((item) => item.id === Number(productId)) ?? null
+        const fallbackProduct = products.find((item) => item.id === Number(productId))
+          ?? fallbackProducts.find((item) => item.id === Number(productId))
+          ?? null
         setDetail({
           productId,
           product: fallbackProduct,
