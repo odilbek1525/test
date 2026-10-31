@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { useProductStore } from '../store/productStore'
 import '../App.css'
 
+const siteBase = import.meta.env.BASE_URL
+
 const formatPrice = (price) =>
   new Intl.NumberFormat('ru-RU', {
     style: 'currency',
@@ -112,10 +114,10 @@ function App() {
   return (
     <div className="app-shell">
       <header className="site-header">
-        <a className="brand" href="/" aria-label="Витрина — главная">
+        <Link className="brand" to="/" aria-label="Витрина — главная">
           <span className="brand__mark" aria-hidden="true">в</span>
           <span>витрина<span className="brand__dot">.</span></span>
-        </a>
+        </Link>
         <span className="header-note">Каталог товаров</span>
         <a className="header-link" href="#catalog">Перейти к каталогу <span aria-hidden="true">↓</span></a>
       </header>
@@ -281,10 +283,10 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <a className="brand brand--footer" href="/" aria-label="Витрина — главная">
+        <Link className="brand brand--footer" to="/" aria-label="Витрина — главная">
           <span className="brand__mark" aria-hidden="true">в</span>
           <span>витрина<span className="brand__dot">.</span></span>
-        </a>
+        </Link>
         <span>Товары, которые делают каждый день особенным.</span>
         <span>Данные предоставлены DummyJSON</span>
       </footer>
@@ -369,7 +371,12 @@ function ProductDetailPage() {
         <article className="product-detail__layout">
           <div className="product-detail__gallery">
             {discount > 0 && <span className="product-card__discount">−{discount}%</span>}
-            <img src={images[0]} alt={product.title} />
+            <img
+              src={images[0].startsWith('http') || images[0].startsWith(siteBase)
+                ? images[0]
+                : `${siteBase}${images[0].replace(/^\//, '')}`}
+              alt={product.title}
+            />
           </div>
           <div className="product-detail__content">
             <p className="eyebrow">{product.category}</p>
@@ -398,7 +405,14 @@ function ProductDetailPage() {
         {images.length > 1 && (
           <div className="product-detail__thumbnails" aria-label="Фотографии товара">
             {images.map((image, index) => (
-              <img src={image} alt={`${product.title} — фото ${index + 1}`} key={image} loading="lazy" />
+              <img
+                src={image.startsWith('http') || image.startsWith(siteBase)
+                  ? image
+                  : `${siteBase}${image.replace(/^\//, '')}`}
+                alt={`${product.title} — фото ${index + 1}`}
+                key={image}
+                loading="lazy"
+              />
             ))}
           </div>
         )}

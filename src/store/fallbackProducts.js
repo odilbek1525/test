@@ -9,7 +9,7 @@ const fallbackProducts = [
     rating: 2.56,
     stock: 99,
     brand: 'Essence',
-    thumbnail: '/products/1.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/1.webp`,
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const fallbackProducts = [
     rating: 2.86,
     stock: 34,
     brand: 'Glamour Beauty',
-    thumbnail: '/products/2.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/2.webp`,
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const fallbackProducts = [
     rating: 4.64,
     stock: 89,
     brand: 'Velvet Touch',
-    thumbnail: '/products/3.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/3.webp`,
   },
   {
     id: 4,
@@ -45,7 +45,7 @@ const fallbackProducts = [
     rating: 4.36,
     stock: 91,
     brand: 'Chic Cosmetics',
-    thumbnail: '/products/4.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/4.webp`,
   },
   {
     id: 5,
@@ -57,7 +57,7 @@ const fallbackProducts = [
     rating: 4.32,
     stock: 79,
     brand: 'Nail Couture',
-    thumbnail: '/products/5.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/5.webp`,
   },
   {
     id: 6,
@@ -69,7 +69,7 @@ const fallbackProducts = [
     rating: 4.37,
     stock: 29,
     brand: 'Calvin Klein',
-    thumbnail: '/products/6.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/6.webp`,
   },
   {
     id: 7,
@@ -81,7 +81,7 @@ const fallbackProducts = [
     rating: 4.26,
     stock: 58,
     brand: 'Chanel',
-    thumbnail: '/products/7.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/7.webp`,
   },
   {
     id: 8,
@@ -93,7 +93,7 @@ const fallbackProducts = [
     rating: 3.8,
     stock: 98,
     brand: 'Dior',
-    thumbnail: '/products/8.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/8.webp`,
   },
   {
     id: 9,
@@ -105,7 +105,7 @@ const fallbackProducts = [
     rating: 3.96,
     stock: 4,
     brand: 'Dolce & Gabbana',
-    thumbnail: '/products/9.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/9.webp`,
   },
   {
     id: 10,
@@ -117,7 +117,7 @@ const fallbackProducts = [
     rating: 2.74,
     stock: 91,
     brand: 'Gucci',
-    thumbnail: '/products/10.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/10.webp`,
   },
   {
     id: 11,
@@ -129,7 +129,7 @@ const fallbackProducts = [
     rating: 4.77,
     stock: 88,
     brand: 'Annibale Colombo',
-    thumbnail: '/products/11.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/11.webp`,
   },
   {
     id: 12,
@@ -141,7 +141,7 @@ const fallbackProducts = [
     rating: 3.92,
     stock: 60,
     brand: 'Annibale Colombo',
-    thumbnail: '/products/12.webp',
+    thumbnail: `${import.meta.env.BASE_URL}products/12.webp`,
   },
 ]
 

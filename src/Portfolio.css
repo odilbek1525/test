@@ -466,6 +466,22 @@
   transition: color 150ms ease, background 150ms ease;
 }
 
+.project-card__links {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.project-card__link svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
 .project-card__link:hover {
   background: var(--text);
   color: var(--page);

@@ -3,6 +3,9 @@ import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-do
 import CatalogPage, { ProductDetailPage } from './pages/CatalogPage.jsx'
 import './Portfolio.css'
 
+const siteBase = import.meta.env.BASE_URL
+const repositoryBase = 'https://github.com/odilbek1525/test'
+
 const copy = {
   ru: {
     navProjects: 'Проекты',
@@ -21,8 +24,9 @@ const copy = {
     projectsTitle: 'Проекты',
     projectsText: 'Небольшая подборка работ и экспериментов.',
     openProject: 'Открыть проект',
+    openRepository: 'Открыть репозиторий на GitHub',
     catalogTitle: 'Витрина товаров',
-    catalogDescription: 'Каталог товаров с данными из API, поиском, фильтрацией по категориям и сортировкой.',
+    catalogDescription: 'Каталог товаров с поиском, фильтрацией, пагинацией и подробными страницами.',
     catalogType: 'React · Axios · Zustand',
     fengShuiTitle: 'Feng Shui',
     fengShuiDescription: 'Макет магазина товаров для дома, вдохновлённый гармонией и философией фэн-шуй.',
@@ -41,7 +45,7 @@ const copy = {
     contactText: 'Открыт к предложениям о работе, интересным проектам и хорошему разговору.',
     email: 'Написать на почту',
     telegram: 'Telegram',
-    editHint: 'Статические макеты Feng Shui и PERFUME LINE открываются в новой вкладке.',
+    editHint: 'Открывайте демо проектов или смотрите исходный код на GitHub.',
     footer: 'Сделано с интересом к деталям',
     themeLight: 'Светлая тема',
     themeDark: 'Тёмная тема',
@@ -64,8 +68,9 @@ const copy = {
     projectsTitle: 'Projects',
     projectsText: 'A small collection of work and experiments.',
     openProject: 'Open project',
+    openRepository: 'Open project repository on GitHub',
     catalogTitle: 'Product storefront',
-    catalogDescription: 'An API-powered product catalogue with search, category filters, and sorting.',
+    catalogDescription: 'An API-powered catalogue with search, filtering, pagination, and detailed product pages.',
     catalogType: 'React · Axios · Zustand',
     fengShuiTitle: 'Feng Shui',
     fengShuiDescription: 'A homeware storefront concept inspired by harmony and Feng Shui.',
@@ -84,7 +89,7 @@ const copy = {
     contactText: "I'm open to job opportunities, interesting projects, and a good conversation.",
     email: 'Send me an email',
     telegram: 'Telegram',
-    editHint: 'The Feng Shui and PERFUME LINE demos open in a new tab.',
+    editHint: 'Open project demos or browse the source code on GitHub.',
     footer: 'Made with an eye for detail',
     themeLight: 'Light theme',
     themeDark: 'Dark theme',
@@ -93,9 +98,9 @@ const copy = {
 }
 
 const projects = [
-  { id: 'store', tone: 'store', title: 'catalogTitle', description: 'catalogDescription', type: 'catalogType', href: '/catalog', action: true },
-  { id: 'feng-shui', tone: 'feng-shui', title: 'fengShuiTitle', description: 'fengShuiDescription', type: 'frontendType', href: '/projects/feng-shui/index.html', previewImage: '/projects/feng-shui/img/harmony.jpg', action: true, external: true },
-  { id: 'perfume-line', tone: 'perfume-line', title: 'perfumeTitle', description: 'perfumeDescription', type: 'frontendType', href: '/projects/perfume-line/index.html', previewImage: '/projects/perfume-line/img/Perfume-line.jpg', action: true, external: true },
+  { id: 'store', tone: 'store', title: 'catalogTitle', description: 'catalogDescription', type: 'catalogType', href: '/catalog', repositoryHref: `${repositoryBase}/tree/main/src/pages`, action: true },
+  { id: 'feng-shui', tone: 'feng-shui', title: 'fengShuiTitle', description: 'fengShuiDescription', type: 'frontendType', href: `${siteBase}projects/feng-shui/index.html`, repositoryHref: `${repositoryBase}/tree/main/public/projects/feng-shui`, previewImage: `${siteBase}projects/feng-shui/img/harmony.jpg`, action: true, external: true },
+  { id: 'perfume-line', tone: 'perfume-line', title: 'perfumeTitle', description: 'perfumeDescription', type: 'frontendType', href: `${siteBase}projects/perfume-line/index.html`, repositoryHref: `${repositoryBase}/tree/main/public/projects/perfume-line`, previewImage: `${siteBase}projects/perfume-line/img/Perfume-line.jpg`, action: true, external: true },
 ]
 
 function ProjectPreview({ project, title }) {
@@ -165,7 +170,7 @@ function PortfolioPage({ language, setLanguage, theme, setTheme }) {
           </div>
           <div className="portrait-panel">
             <div className="portrait-panel__frame">
-              <img src="/profile-photo.svg" alt="Placeholder portrait illustration" />
+              <img src={`${siteBase}profile-photo.svg`} alt="Placeholder portrait illustration" />
               <span className="portrait-panel__badge">HELLO<br />WORLD!</span>
             </div>
             <span className="portrait-panel__caption">01 / THE PERSON BEHIND THE PIXELS</span>
@@ -188,19 +193,32 @@ function PortfolioPage({ language, setLanguage, theme, setTheme }) {
                     <h3>{t[project.title]}</h3>
                     <p>{t[project.description]}</p>
                   </div>
-                  {project.action && (project.external ? (
+                  <div className="project-card__links">
+                    {project.action && (project.external ? (
+                      <a
+                        className="project-card__link"
+                        href={project.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`${t.openProject}: ${t[project.title]}`}
+                      >
+                        ↗
+                      </a>
+                    ) : (
+                      <Link className="project-card__link" to={project.href} aria-label={`${t.openProject}: ${t[project.title]}`}>↗</Link>
+                    ))}
                     <a
                       className="project-card__link"
-                      href={project.href}
+                      href={project.repositoryHref}
                       target="_blank"
                       rel="noreferrer"
-                      aria-label={`${t.openProject}: ${t[project.title]}`}
+                      aria-label={`${t.openRepository}: ${t[project.title]}`}
                     >
-                      ↗
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.9a3.4 3.4 0 0 0-.9-2.7c3-.3 6.1-1.5 6.1-6.7a5.2 5.2 0 0 0-1.4-3.6 4.8 4.8 0 0 0-.1-3.6s-1.1-.4-3.7 1.4a13 13 0 0 0-6.7 0C5.7 1.1 4.6 1.5 4.6 1.5a4.8 4.8 0 0 0-.1 3.6 5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.1 6.4 6.1 6.7a3.4 3.4 0 0 0-.9 2.7V22" />
+                      </svg>
                     </a>
-                  ) : (
-                    <Link className="project-card__link" to={project.href} aria-label={`${t.openProject}: ${t[project.title]}`}>↗</Link>
-                  ))}
+                  </div>
                 </div>
               </article>
             ))}
@@ -222,7 +240,7 @@ function PortfolioPage({ language, setLanguage, theme, setTheme }) {
             </div>
           </div>
           <div className="about-photo">
-            <img src="/profile-photo.svg" alt="Placeholder portrait illustration" />
+            <img src={`${siteBase}profile-photo.svg`} alt="Placeholder portrait illustration" />
             <span>{t.aboutPhoto}</span>
           </div>
         </section>
@@ -256,7 +274,7 @@ function AppRoutes() {
 
   useEffect(() => {
     document.documentElement.lang = language
-    document.title = location.pathname === '/catalog'
+    document.title = location.pathname.startsWith('/catalog')
       ? 'Витрина — каталог товаров'
       : language === 'ru'
         ? 'Портфолио — Frontend-разработчик'
@@ -278,7 +296,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AppRoutes />
     </BrowserRouter>
   )
