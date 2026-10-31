@@ -1,0 +1,47 @@
+:root {
+  --body: #F9F8F4;
+  --color: #242424;
+  --font-family: "Share Tech Mono", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+body {
+  background: var(--body);
+  color: var(--color);
+  font-family: var(--font-family);
+}
+
+.container {
+  max-width: 1728px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+input, button {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
