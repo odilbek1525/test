@@ -663,6 +663,45 @@
   }
 }
 
+@media (max-width: 760px) {
+  .portfolio-hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 38px;
+    padding-bottom: 76px;
+  }
+
+  .portrait-panel {
+    width: min(78%, 420px);
+    justify-self: center;
+  }
+
+  .portrait-panel__frame {
+    height: auto;
+    aspect-ratio: 1.05;
+  }
+
+  .about-section {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .about-photo {
+    width: min(78%, 380px);
+    justify-self: center;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-section {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 28px;
+  }
+}
+
 @media (max-width: 600px) {
   .portfolio-header,
   .portfolio-section,
@@ -797,5 +836,19 @@
 
   .portfolio-nav a {
     font-size: 9px;
+  }
+
+  .portfolio-hero__actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .project-card__details {
+    align-items: flex-start;
+  }
+
+  .project-preview {
+    height: 210px;
   }
 }

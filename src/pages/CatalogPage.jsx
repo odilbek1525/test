@@ -1,10 +1,17 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ReactPaginate from 'react-paginate'
+import { A11y, Navigation, Pagination } from 'swiper/modules'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 import fallbackProducts from '../store/fallbackProducts'
 import { useProductStore } from '../store/productStore'
 import '../App.css'
 
 const siteBase = import.meta.env.BASE_URL
+const pageSize = 12
 
 const formatPrice = (price) =>
   new Intl.NumberFormat('ru-RU', {
@@ -12,6 +19,9 @@ const formatPrice = (price) =>
     currency: 'USD',
     maximumFractionDigits: 2,
   }).format(price)
+
+const getDiscountedPrice = (price, discountPercentage) =>
+  price * (1 - discountPercentage / 100)
 
 function ProductCard({ product }) {
   const discount = Math.round(product.discountPercentage)
@@ -39,9 +49,9 @@ function ProductCard({ product }) {
         <p className="product-card__description">{product.description}</p>
         <div className="product-card__footer">
           <div className="product-card__price">
-            <strong>{formatPrice(product.price)}</strong>
+            <strong>{formatPrice(getDiscountedPrice(product.price, product.discountPercentage))}</strong>
             {discount > 0 && (
-              <span>{formatPrice(product.price / (1 - product.discountPercentage / 100))}</span>
+              <span>{formatPrice(product.price)}</span>
             )}
           </div>
           <span className={`product-card__stock ${product.stock < 10 ? 'is-low' : ''}`}>
@@ -69,48 +79,36 @@ function LoadingState() {
 }
 
 function App() {
-  const { products, loading, error, fetchProducts } = useProductStore()
+  const { products, total, categories, categoriesError, loading, error, fetchProducts, fetchCategories } = useProductStore()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
-  const [sort, setSort] = useState('featured')
-  const [page, setPage] = useState(1)
-  const pageSize = 12
+  const [sort, setSort] = useState('title-asc')
+  const [page, setPage] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
-    fetchProducts(controller.signal)
+    fetchCategories(controller.signal)
     return () => controller.abort()
-  }, [fetchProducts])
+  }, [fetchCategories])
 
-  const categories = useMemo(
-    () => [...new Set(products.map((product) => product.category))].sort(),
-    [products],
-  )
+  useEffect(() => {
+    const controller = new AbortController()
+    const [sortBy, order] = sort.split('-')
 
-  const visibleProducts = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase('ru')
-    const filtered = products.filter((product) => {
-      const matchesCategory = category === 'all' || product.category === category
-      const searchableText = `${product.title} ${product.brand ?? ''} ${product.description}`.toLocaleLowerCase('ru')
-      return matchesCategory && searchableText.includes(query)
+    fetchProducts({
+      signal: controller.signal,
+      limit: pageSize,
+      skip: page * pageSize,
+      sortBy,
+      order,
+      search,
+      category,
     })
 
-    switch (sort) {
-      case 'price-asc':
-        return filtered.sort((a, b) => a.price - b.price)
-      case 'price-desc':
-        return filtered.sort((a, b) => b.price - a.price)
-      case 'rating':
-        return filtered.sort((a, b) => b.rating - a.rating)
-      case 'title':
-        return filtered.sort((a, b) => a.title.localeCompare(b.title, 'ru'))
-      default:
-        return filtered
-    }
-  }, [category, products, search, sort])
+    return () => controller.abort()
+  }, [category, fetchProducts, page, search, sort])
 
-  const pageCount = Math.max(1, Math.ceil(visibleProducts.length / pageSize))
-  const paginatedProducts = visibleProducts.slice((page - 1) * pageSize, page * pageSize)
+  const pageCount = Math.ceil(total / pageSize)
 
   return (
     <div className="app-shell">
@@ -142,7 +140,7 @@ function App() {
             <div className="hero__tag">ПОДБРАНО<br />С ЛЮБОВЬЮ</div>
             <div className="hero__visual-caption">Новая глава начинается с деталей.</div>
           </div>
-          <span className="hero__index">01 — {products.length.toString().padStart(2, '0')}</span>
+          <span className="hero__index">01 — {total.toString().padStart(2, '0')}</span>
         </section>
 
         <section className="catalog" id="catalog">
@@ -152,7 +150,7 @@ function App() {
               <h2>Популярное сейчас<span>.</span></h2>
             </div>
             <p className="catalog__count">
-              {loading ? 'Загружаем каталог…' : error ? 'Резервный каталог' : `${visibleProducts.length} товаров`}
+              {loading ? 'Загружаем каталог…' : error ? 'Резервный каталог' : `${total} товаров`}
             </p>
           </div>
 
@@ -167,7 +165,7 @@ function App() {
                 placeholder="Найти что-то особенное"
                 value={search}
                 onChange={(event) => {
-                  setPage(1)
+                  setPage(0)
                   setSearch(event.target.value)
                 }}
                 aria-label="Поиск товаров"
@@ -178,16 +176,17 @@ function App() {
               <select
                 value={sort}
                 onChange={(event) => {
-                  setPage(1)
+                  setPage(0)
                   setSort(event.target.value)
                 }}
                 aria-label="Сортировка товаров"
               >
-                <option value="featured">По популярности</option>
-                <option value="price-asc">Сначала дешевле</option>
-                <option value="price-desc">Сначала дороже</option>
-                <option value="rating">По рейтингу</option>
-                <option value="title">По названию</option>
+                <option value="title-asc">Название: А — Я</option>
+                <option value="title-desc">Название: Я — А</option>
+                <option value="price-asc">Цена: по возрастанию</option>
+                <option value="price-desc">Цена: по убыванию</option>
+                <option value="stock-asc">Количество: по возрастанию</option>
+                <option value="stock-desc">Количество: по убыванию</option>
               </select>
             </label>
           </div>
@@ -196,7 +195,7 @@ function App() {
             <button
               className={`category-chip ${category === 'all' ? 'is-active' : ''}`}
               onClick={() => {
-                setPage(1)
+                setPage(0)
                 setCategory('all')
               }}
               type="button"
@@ -208,7 +207,7 @@ function App() {
                 className={`category-chip ${category === item ? 'is-active' : ''}`}
                 key={item}
                 onClick={() => {
-                  setPage(1)
+                  setPage(0)
                   setCategory(item)
                 }}
                 type="button"
@@ -217,6 +216,10 @@ function App() {
               </button>
             ))}
           </div>
+
+          {categoriesError && (
+            <p className="catalog__notice" role="status">{categoriesError}</p>
+          )}
 
           {error && products.length > 0 && (
             <div className="state-message state-message--error" role="alert">
@@ -231,32 +234,37 @@ function App() {
 
           {loading ? (
             <LoadingState />
-          ) : visibleProducts.length > 0 ? (
+          ) : products.length > 0 ? (
             <>
               <div className="product-grid">
-                {paginatedProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+                {products.map((product) => <ProductCard key={product.id} product={product} />)}
               </div>
               {pageCount > 1 && (
-                <nav className="pagination" aria-label="Страницы каталога">
-                  <button
-                    className="pagination__button"
-                    type="button"
-                    onClick={() => setPage((current) => Math.max(1, current - 1))}
-                    disabled={page === 1}
-                  >
-                    Назад
-                  </button>
-                  <span className="pagination__status" aria-live="polite">
-                    Страница {page} из {pageCount}
-                  </span>
-                  <button
-                    className="pagination__button"
-                    type="button"
-                    onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
-                    disabled={page === pageCount}
-                  >
-                    Далее
-                  </button>
+                <nav aria-label="Страницы каталога">
+                  <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="Вперёд →"
+                    nextAriaLabel="Следующая страница"
+                    onPageChange={({ selected }) => setPage(selected)}
+                    pageRangeDisplayed={3}
+                    pageCount={pageCount}
+                    forcePage={page}
+                    previousLabel="← Назад"
+                    previousAriaLabel="Предыдущая страница"
+                    renderOnZeroPageCount={null}
+                    containerClassName="pagination"
+                    pageClassName="pagination__page"
+                    pageLinkClassName="pagination__link"
+                    previousClassName="pagination__previous"
+                    previousLinkClassName="pagination__button"
+                    nextClassName="pagination__next"
+                    nextLinkClassName="pagination__button"
+                    breakClassName="pagination__break"
+                    breakLinkClassName="pagination__link"
+                    activeClassName="is-active"
+                    disabledClassName="is-disabled"
+                    ariaLabelBuilder={(item) => `Страница ${item}`}
+                  />
                 </nav>
               )}
             </>
@@ -271,7 +279,7 @@ function App() {
                   onClick={() => {
                     setSearch('')
                     setCategory('all')
-                    setPage(1)
+                    setPage(0)
                   }}
                   type="button"
                 >
@@ -374,12 +382,25 @@ function ProductDetailPage() {
         <article className="product-detail__layout">
           <div className="product-detail__gallery">
             {discount > 0 && <span className="product-card__discount">−{discount}%</span>}
-            <img
-              src={images[0].startsWith('http') || images[0].startsWith(siteBase)
-                ? images[0]
-                : `${siteBase}${images[0].replace(/^\//, '')}`}
-              alt={product.title}
-            />
+            <Swiper
+              modules={[A11y, Navigation, Pagination]}
+              navigation
+              pagination={{ clickable: true }}
+              spaceBetween={12}
+              className="product-detail__swiper"
+              aria-label={`Изображения товара: ${product.title}`}
+            >
+              {images.map((image, index) => (
+                <SwiperSlide key={image}>
+                  <img
+                    src={image.startsWith('http') || image.startsWith(siteBase)
+                      ? image
+                      : `${siteBase}${image.replace(/^\//, '')}`}
+                    alt={`${product.title} — фото ${index + 1}`}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
           <div className="product-detail__content">
             <p className="eyebrow">{product.category}</p>
@@ -388,9 +409,9 @@ function ProductDetailPage() {
             <p className="product-detail__rating"><span aria-hidden="true">★</span> {product.rating.toFixed(1)} / 5</p>
             <p className="product-detail__description">{product.description}</p>
             <div className="product-detail__price">
-              <strong>{formatPrice(product.price)}</strong>
+              <strong>{formatPrice(getDiscountedPrice(product.price, product.discountPercentage))}</strong>
               {discount > 0 && (
-                <span>{formatPrice(product.price / (1 - product.discountPercentage / 100))}</span>
+                <span>{formatPrice(product.price)}</span>
               )}
             </div>
             <p className={`product-card__stock ${product.stock < 10 ? 'is-low' : ''}`}>

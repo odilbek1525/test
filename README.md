@@ -8,7 +8,7 @@
 - [Feng Shui — демо](https://odilbek1525.github.io/test/projects/feng-shui/index.html) · [исходный код](https://github.com/odilbek1525/test/tree/main/public/projects/feng-shui)
 - [PERFUME LINE — демо](https://odilbek1525.github.io/test/projects/perfume-line/index.html) · [исходный код](https://github.com/odilbek1525/test/tree/main/public/projects/perfume-line)
 
-Каталог загружает товары из [DummyJSON Products API](https://dummyjson.com/products?limit=0), показывает их страницами по 12 позиций и поддерживает поиск, фильтрацию, сортировку и подробные страницы товаров. При недоступности API используется локальный резервный каталог.
+Каталог загружает товары из [DummyJSON Products API](https://dummyjson.com/products), показывает по 12 товаров на странице и поддерживает поиск, фильтрацию, сортировку по названию, цене и количеству, а также подробные страницы с галереей изображений. Цена в каталоге учитывает скидку из API. При недоступности API используется локальный резервный каталог.
 
 ## Запуск
 
